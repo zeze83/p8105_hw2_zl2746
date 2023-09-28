@@ -57,6 +57,6 @@ snp_sep_df =
     month = month(month, label = TRUE)
   ) |>
   select(-starts_with("day")) |>
-  arrange(snp_sep_df, year)
+  relocate(year)
 ```
 
