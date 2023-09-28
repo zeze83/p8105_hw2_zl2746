@@ -7,5 +7,56 @@ output: github_document
 
 ```{r}
 library(tidyverse)
+library(readr)
+```
+
+## Problem 1
+
+Step 1. Use `separate()` to break up the variable `mon` into integer variables `year`, `month`, and `day`; 
+
+replace month number with month name; 
+
+create a `president` variable taking values `gop` and `dem`, and remove `prez_dem` and `prez_gop`; 
+
+and remove the `day` variable.
+
+```{r step1}
+month_df = 
+  read_csv("fivethirtyeight_datasets/pols-month.csv") |>
+  janitor::clean_names()
+  
+month_sep_df =
+  separate(month_df,col=mon,c("year","month","day"),sep="-") |>
+  mutate(
+    year = as.integer(year),
+    month = as.integer(month),
+    day = as.integer(day),
+    month = month(month, label = TRUE),
+    #month_full = month(month, label = TRUE, abbr = FALSE)
+    president = prez_gop + prez_dem
+  ) |>
+  select(-starts_with("prez")) |>
+  select(-starts_with("day"))
+```
+
+Step 2. Clean the data in snp.csv using a similar process to the above. 
+
+For consistency across datasets, arrange according to year and month, and organize so that year and month are the leading columns.
+
+```{r step2}
+snp_df = 
+  read_csv("fivethirtyeight_datasets/snp.csv") |>
+  janitor::clean_names()
+
+snp_sep_df =
+  separate(snp_df,col=date,c("month","day","year"),sep="/") |>
+  mutate(
+    month = as.integer(month),
+    day = as.integer(day),
+    year = as.integer(year),
+    month = month(month, label = TRUE)
+  ) |>
+  select(-starts_with("day")) |>
+  arrange(snp_sep_df, year)
 ```
 
