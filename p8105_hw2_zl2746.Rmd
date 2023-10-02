@@ -21,7 +21,7 @@ create a `president` variable taking values `gop` and `dem`, and remove `prez_de
 
 and remove the `day` variable.
 
-```{r step1}
+```{r p1step1}
 month_df = 
   read_csv("fivethirtyeight_datasets/pols-month.csv") |>
   janitor::clean_names()
@@ -43,7 +43,7 @@ Step 2. Clean the data in snp.csv using a similar process to the above.
 
 For consistency across datasets, arrange according to year and month, and organize so that year and month are the leading columns.
 
-```{r step2}
+```{r p1step2}
 snp_df = 
   read_csv("fivethirtyeight_datasets/snp.csv") |>
   janitor::clean_names()
@@ -67,7 +67,7 @@ This process will involve switching from “wide” to “long” format; ensuri
 
 and ensuring that key variables take the same values.
 
-```{r step3}
+```{r p1step3}
 unem_df = 
   read_csv("fivethirtyeight_datasets/unemployment.csv") |>
   pivot_longer(
@@ -81,7 +81,7 @@ unem_df =
 
 Step 4. Join the datasets by merging snp into pols, and merging unemployment into the result. 
 
-```{r}
+```{r p1step4}
 data_3 = 
   left_join(month_sep_df, snp_sep_df) |>
   left_join(x = _, y = unem_df)
@@ -100,7 +100,7 @@ In Januarys in or after 1975 in which a democrat was president, the **average un
 
 ## Problem 2
 
-```{r}
+```{r problem2}
 Mr.Trash_df = 
   read_excel("202207 Trash Wheel Collection Data.xlsx",sheet = 1, range = "A2:N549") |>
   janitor::clean_names() |>
@@ -138,3 +138,24 @@ For available data, what was the total weight of trash collected by Professor Tr
 What was the total number of cigarette butts collected by Gwynnda in July of 2021?
 
 
+
+# Problem 3
+
+Step 1. Import, clean, and tidy the dataset of baseline demographics. 
+
+Ensure that sex and APOE4 carrier status are appropriate encoded (i.e. not numeric), and remove any participants who do not meet the stated inclusion criteria (i.e. no MCI at baseline). 
+
+```{r p3step1}
+base_df = read_csv("data_mci/MCI_baseline.csv") |>
+  janitor::clean_names() |>
+  rename(onset = age_at_the_onset_of_mci_missing_if_a_subject_remains_mci_free_during_the_follow_up_period) |>
+  mutate(
+    sex = recode(x1_male_0_female, "0" = "female", "1" = "male"),
+    apoe4 = recode(x1_apoe4_carrier_0_apoe4_non_carrier, "0" = "non-apoe4 carrier", "1" = "apoe4 carrier"),
+    onset = ifelse(onset == '.', NA, onset)
+  ) |>
+  filter(!is.na(onset))
+```
+
+
+Discuss important steps in the import process and relevant features of the dataset. How many participants were recruited, and of these how many develop MCI? What is the average baseline age? What proportion of women in the study are APOE4 carriers?
