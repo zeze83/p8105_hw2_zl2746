@@ -89,7 +89,13 @@ data_3 =
 
 Step 5. Write a short paragraph about these datasets. Explain briefly what each dataset contained, and describe the resulting dataset (e.g. give the dimension, range of years, and names of key variables).
 
+The `pols` data has `r nrow(pols)` observations and `r ncol(pols)` variables and tells us about the party affiliation distribution (democrat or republican) for governors and senators for a given year from years `r range(pols$year)[1]` to `r range(pols$year)[2]`. It also tells us whether the sitting president was a democrat or republican. 
 
+The `snp` data has `r nrow(snp)` observations and `r ncol(snp)` variables, ranging from years `r range(snp$year)[1]` to `r range(snp$year)[2]`. 
+
+The `unemployment` data has `r nrow(unemployment)` observations and `r ncol(unemployment)` variables ranging from years `r range(unemployment$year)[1]` to `r range(unemployment$year)[2]`. 
+
+In Januarys in or after 1975 in which a democrat was president, the **average unemployment rate was `r filter(data_538, month == "January", year >= 1975, president == "dem") |> pull(unemployment) |> mean() |> round(2)`**.  The average unemployment rate over the same time period in which a republican was president was `r filter(data_538, month == "January", year >= 1975, president == "gop") |> pull(unemployment) |> mean() |> round(2)`.
 
 
 ## Problem 2
@@ -97,16 +103,38 @@ Step 5. Write a short paragraph about these datasets. Explain briefly what each 
 ```{r}
 Mr.Trash_df = 
   read_excel("202207 Trash Wheel Collection Data.xlsx",sheet = 1, range = "A2:N549") |>
-  janitor::clean_names() #|>
-  #mutate(
-    #homes_powered = 
-  #)
+  janitor::clean_names() |>
+  mutate(
+    homes_powered = (weight_tons*500)/30
+  ) |>
+  add_column(type = "Mr. Trash")
+
 
 Prof.Trash_df = 
   read_excel("202207 Trash Wheel Collection Data.xlsx",sheet = 2) |>
-  janitor::clean_names()
+  janitor::clean_names() |>
+  mutate(
+    year = as.character(year)
+  ) |>
+  add_column(type = "Professor Trash")
 
 G.Trash_df = 
   read_excel("202207 Trash Wheel Collection Data.xlsx",sheet = 4) |>
-  janitor::clean_names()
+  janitor::clean_names() |>
+  mutate(
+    year = as.character(year)
+  ) |>
+  add_column(type = "Gwynnda Trash")
+
+combine_data = 
+  left_join(Mr.Trash_df, Prof.Trash_df)# |>
+  #left_join(x = _, y = G.Trash_df)
 ```
+
+Write a paragraph about these data; you are encouraged to use inline R. Be sure to note the number of observations in the resulting dataset, and give examples of key variables.
+
+For available data, what was the total weight of trash collected by Professor Trash Wheel? 
+
+What was the total number of cigarette butts collected by Gwynnda in July of 2021?
+
+
