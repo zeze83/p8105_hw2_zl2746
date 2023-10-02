@@ -49,12 +49,13 @@ snp_df =
   janitor::clean_names()
 
 snp_sep_df =
-  separate(snp_df,col=date,c("month","day","year"),sep="/") |>
+  separate(snp_df,col=date,c("month","day","year"), sep="/") |>
   mutate(
     month = as.integer(month),
     day = as.integer(day),
     year = as.integer(year),
-    month = month(month, label = TRUE)
+    month = month(month, label = TRUE),
+    year = ifelse(year<16, year+2000, year+1900)
   ) |>
   select(-starts_with("day")) |>
   relocate(year)
@@ -69,8 +70,25 @@ and ensuring that key variables take the same values.
 ```{r step3}
 unem_df = 
   read_csv("fivethirtyeight_datasets/unemployment.csv") |>
-  janitor::clean_names()
+  pivot_longer(
+    Jan:Dec, 
+    names_to = "month",
+    values_to = "unemployment"
+  ) |> 
+  rename(year = Year) |> 
+  select(year, month, unemployment)
 ```
+
+Step 4. Join the datasets by merging snp into pols, and merging unemployment into the result. 
+
+```{r}
+data_3 = 
+  left_join(month_sep_df, snp_sep_df) |>
+  left_join(x = _, y = unem_df)
+```
+
+Step 5. Write a short paragraph about these datasets. Explain briefly what each dataset contained, and describe the resulting dataset (e.g. give the dimension, range of years, and names of key variables).
+
 
 
 
@@ -79,10 +97,10 @@ unem_df =
 ```{r}
 Mr.Trash_df = 
   read_excel("202207 Trash Wheel Collection Data.xlsx",sheet = 1, range = "A2:N549") |>
-  janitor::clean_names() |>
-  mutate(
-    homes_powered = 
-  )
+  janitor::clean_names() #|>
+  #mutate(
+    #homes_powered = 
+  #)
 
 Prof.Trash_df = 
   read_excel("202207 Trash Wheel Collection Data.xlsx",sheet = 2) |>
@@ -92,8 +110,3 @@ G.Trash_df =
   read_excel("202207 Trash Wheel Collection Data.xlsx",sheet = 4) |>
   janitor::clean_names()
 ```
-
-```{r}
-
-```
-
