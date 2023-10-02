@@ -8,6 +8,7 @@ output: github_document
 ```{r}
 library(tidyverse)
 library(readr)
+library(readxl)
 ```
 
 ## Problem 1
@@ -33,9 +34,8 @@ month_sep_df =
     day = as.integer(day),
     month = month(month, label = TRUE),
     #month_full = month(month, label = TRUE, abbr = FALSE)
-    president = prez_gop + prez_dem
+    president = recode(prez_gop, "0" = "dem", "1" = "gop", "2" = "gop")
   ) |>
-  select(-starts_with("prez")) |>
   select(-starts_with("day"))
 ```
 
@@ -70,5 +70,30 @@ and ensuring that key variables take the same values.
 unem_df = 
   read_csv("fivethirtyeight_datasets/unemployment.csv") |>
   janitor::clean_names()
+```
+
+
+
+## Problem 2
+
+```{r}
+Mr.Trash_df = 
+  read_excel("202207 Trash Wheel Collection Data.xlsx",sheet = 1, range = "A2:N549") |>
+  janitor::clean_names() |>
+  mutate(
+    homes_powered = 
+  )
+
+Prof.Trash_df = 
+  read_excel("202207 Trash Wheel Collection Data.xlsx",sheet = 2) |>
+  janitor::clean_names()
+
+G.Trash_df = 
+  read_excel("202207 Trash Wheel Collection Data.xlsx",sheet = 4) |>
+  janitor::clean_names()
+```
+
+```{r}
+
 ```
 
