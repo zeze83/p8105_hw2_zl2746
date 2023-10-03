@@ -119,6 +119,7 @@ Mr.Trash_df =
   mutate(
     homes_powered = (weight_tons*500)/30
   ) |>
+  drop_na(dumpster) |>
   add_column(type = "Mr. Trash")
 
 Prof.Trash_df = 
@@ -128,7 +129,7 @@ Prof.Trash_df =
     homes_powered = (weight_tons*500)/30,
     year = as.character(year)
   ) |>
-  drop_na() |>
+  drop_na(dumpster) |>
   add_column(type = "Professor Trash") 
 
 G.Trash_df = 
@@ -138,7 +139,7 @@ G.Trash_df =
     homes_powered = (weight_tons*500)/30,
     year = as.character(year)
   ) |>
-  drop_na() |>
+  drop_na(dumpster) |>
   add_column(type = "Gwynnda Trash")
 
 cdata_p2 = 
