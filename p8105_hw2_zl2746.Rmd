@@ -13,7 +13,7 @@ library(readxl)
 
 ## Problem 1
 
-# Step 1. 
+### Step 1. 
 
 Use `separate()` to break up the variable `mon` into integer variables `year`, `month`, and `day`; 
 
@@ -41,7 +41,7 @@ month_sep_df =
   select(-starts_with("day"))
 ```
 
-# Step 2. 
+### Step 2. 
 
 Clean the data in snp.csv using a similar process to the above. 
 
@@ -65,7 +65,7 @@ snp_sep_df =
   relocate(year)
 ```
 
-# Step 3. 
+### Step 3. 
 
 Tidy the unemployment data so that it can be merged with the previous datasets. 
 
@@ -86,28 +86,17 @@ unem_df =
 # drop_na?
 ```
 
-# Step 4. 
+### Step 4. 
 
 Join the datasets by merging snp into pols, and merging unemployment into the result. 
 
 ```{r p1step4}
-data_3 = 
+cdata_p1 = 
   left_join(month_sep_df, snp_sep_df) |>
   left_join(x = _, y = unem_df) 
-data_3 = str.(data_3)
+
 ```
 
-# Step 5.
-
-Write a short paragraph about these datasets. Explain briefly what each dataset contained, and describe the resulting dataset (e.g. give the dimension, range of years, and names of key variables).
-
-The `pols` data has `r nrow(pols)` observations and `r ncol(pols)` variables and tells us about the party affiliation distribution (democrat or republican) for governors and senators for a given year from years `r range(pols$year)[1]` to `r range(pols$year)[2]`. It also tells us whether the sitting president was a democrat or republican. 
-
-The `snp` data has `r nrow(snp)` observations and `r ncol(snp)` variables, ranging from years `r range(snp$year)[1]` to `r range(snp$year)[2]`. 
-
-The `unemployment` data has `r nrow(unemployment)` observations and `r ncol(unemployment)` variables ranging from years `r range(unemployment$year)[1]` to `r range(unemployment$year)[2]`. 
-
-In Januarys in or after 1975 in which a democrat was president, the **average unemployment rate was `r filter(data_538, month == "January", year >= 1975, president == "dem") |> pull(unemployment) |> mean() |> round(2)`**.  The average unemployment rate over the same time period in which a republican was president was `r filter(data_538, month == "January", year >= 1975, president == "gop") |> pull(unemployment) |> mean() |> round(2)`.
 
 
 ## Problem 2
@@ -141,9 +130,9 @@ G.Trash_df =
   drop_na() |>
   add_column(type = "Gwynnda Trash")
 
-combine_data = 
-  left_join(Mr.Trash_df, Prof.Trash_df)# |>
-  #left_join(x = _, y = G.Trash_df)
+cdata_p2 = 
+  bind_rows(Mr.Trash_df, Prof.Trash_df) |>
+  bind_rows(x = _, y = G.Trash_df)
 ```
 
 Write a paragraph about these data; you are encouraged to use inline R. Be sure to note the number of observations in the resulting dataset, and give examples of key variables.
@@ -156,52 +145,54 @@ What was the total number of cigarette butts collected by Gwynnda in July of 202
 
 ## Problem 3
 
-# Step 1. 
+### Step 1. 
 
 Import, clean, and tidy the dataset of baseline demographics. 
 
 Ensure that sex and APOE4 carrier status are appropriate encoded (i.e. not numeric), and remove any participants who do not meet the stated inclusion criteria (i.e. no MCI at baseline). 
 
 ```{r p3step1}
-base_df = read_csv("data_mci/MCI_baseline.csv") |>
+base_df = 
+  read_csv("data_mci/MCI_baseline.csv", skip = 1) |>
   janitor::clean_names() |>
-  rename(onset = age_at_the_onset_of_mci_missing_if_a_subject_remains_mci_free_during_the_follow_up_period) |>
   mutate(
-    sex = recode(x1_male_0_female, "0" = "female", "1" = "male"),
-    apoe4 = recode(x1_apoe4_carrier_0_apoe4_non_carrier, "0" = "non-apoe4 carrier", "1" = "apoe4 carrier"),
-    onset = ifelse(onset == '.', NA, onset)
+    sex = recode(sex, "0" = "female", "1" = "male"),
+    apoe4 = recode(apoe4, "0" = "non-apoe4 carrier", "1" = "apoe4 carrier"),
+    age_at_onset = ifelse(age_at_onset == '.', NA, age_at_onset)
   ) |>
-  filter(!is.na(onset))
+  filter(current_age < age_at_onset | is.na(age_at_onset)) 
 ```
 
 
-Discuss important steps in the import process and relevant features of the dataset. 
 
-
-
-How many participants were recruited, and of these how many develop MCI? 
-
-What is the average baseline age? `r average(age_at_the_study_baseline)`
-
-What proportion of women in the study are APOE4 carriers?
-
-
-# Step 2. 
+### Step 2. 
 
 Similarly, import, clean, and tidy the dataset of longitudinally observed biomarker values; 
 
 ```{r p3step2}
-amyloid = read_csv("data_mci/mci_amyloid.csv") |>
+amyloid = read_csv("data_mci/mci_amyloid.csv", skip = 1) |>
   janitor::clean_names() |>
   rename(
-    measuretime = time_in_years_elapsed_since_the_study_baseline_to_the_visit_where_biomarker_amyloid_42_40_ratio_was_measured, 
-    Time2 = na_3,
-    Time4 = na_4,
-    Time6 = na_5,
-    Time8 = na_6
+    id = study_id,
+    time_0 = baseline
     ) |>
-  drop_na()
+  pivot_longer(
+    time_0:time_8, 
+    names_to = "timeperiod",
+    values_to = "years"
+  ) 
 ```
 
 Comment on the steps on the import process and the features of the dataset.
+
+```{r}
+diffdata1 =
+  anti_join(base_df, amyloid)
+
+diffdata2 =
+  anti_join(amyloid, base_df)
+
+cdata_p3 = 
+  inner_join(base_df, amyloid)
+```
 
