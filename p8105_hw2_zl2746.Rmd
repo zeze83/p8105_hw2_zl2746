@@ -97,13 +97,13 @@ cdata_p1 =
 
 ```
 
-
+#
 
 ## Problem 2
 
 ```{r problem2}
 Mr.Trash_df = 
-  read_excel("202207 Trash Wheel Collection Data.xlsx",sheet = 1, range = "A2:N549") |>
+  read_excel("202309 Trash Wheel Collection Data.xlsx",sheet = 1, range = "A2:N549") |>
   janitor::clean_names() |>
   mutate(
     homes_powered = (weight_tons*500)/30
@@ -111,7 +111,7 @@ Mr.Trash_df =
   add_column(type = "Mr. Trash")
 
 Prof.Trash_df = 
-  read_excel("202207 Trash Wheel Collection Data.xlsx",sheet = 2) |>
+  read_excel("202309 Trash Wheel Collection Data.xlsx",sheet = 2) |>
   janitor::clean_names() |>
   mutate(
     homes_powered = (weight_tons*500)/30,
@@ -121,7 +121,7 @@ Prof.Trash_df =
   add_column(type = "Professor Trash") 
 
 G.Trash_df = 
-  read_excel("202207 Trash Wheel Collection Data.xlsx",sheet = 4) |>
+  read_excel("202309 Trash Wheel Collection Data.xlsx",sheet = 4) |>
   janitor::clean_names() |>
   mutate(
     homes_powered = (weight_tons*500)/30,
@@ -140,7 +140,6 @@ Write a paragraph about these data; you are encouraged to use inline R. Be sure 
 For available data, what was the total weight of trash collected by Professor Trash Wheel? 
 
 What was the total number of cigarette butts collected by Gwynnda in July of 2021?
-
 
 
 ## Problem 3
