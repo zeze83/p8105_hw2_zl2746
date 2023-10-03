@@ -149,11 +149,11 @@ cdata_p2 =
 
 Write a paragraph about these data; you are encouraged to use inline R. Be sure to note the number of observations in the resulting dataset, and give examples of key variables.
 
-The `Mr.Trash` data has `r nrow(Mr.Trash_df)` observations and `r ncol(Mr.Trash_df)` variables and tells us about the  information on the dumpter number, date of collection, amount of total litter and litter type. It also tells Mr.Transh  transferred `r sum(Mr.Trash_df$homes_powered)` power into make electricity for Maryland homes.
+The `Mr.Trash` data has `r nrow(Mr.Trash_df)` observations and `r ncol(Mr.Trash_df)` variables and tells us about the  information on the dumpter number, date of collection, amount of total litter and litter type. By the `home powered note`, the `homes_powered` is calculated using trash `weight_tons`. On `r Mr.Trash_df$date[1]`, dumpster `r Mr.Trash_df$dumpster[1]` has `r Mr.Trash_df$weight_tons[1]` tons of trash, which could power average `r Mr.Trash_df$homes_powered[1]` homes powered.
 
-The `Prof.Trash` data has `r nrow(Prof.Trash_df)` observations and `r ncol(Prof.Trash_df)` variables and tells us about the  information on the dumpter number, date of collection, amount of total litter and litter type. It also tells Prof.Transh  transferred `r sum(Prof.Trash_df$homes_powered)` power into make electricity.
+The `Prof.Trash` data has `r nrow(Prof.Trash_df)` observations and `r ncol(Prof.Trash_df)` variables and tells us about the  information on the dumpter number, date of collection, amount of total litter and litter type. On `r Prof.Trash_df$date[1]`, dumpster `r Prof.Trash_df$dumpster[1]` has `r Prof.Trash_df$weight_tons[1]` tons of trash, which could power average `r Prof.Trash_df$homes_powered[1]` homes powered.
 
-The `G.Trash` data has `r nrow(G.Trash_df)` observations and `r ncol(G.Trash_df)` variables and tells us about the  information on the dumpter number, date of collection, amount of total litter and litter type. It also tells Gwynnda Transh transferred `r sum(G.Trash_df$homes_powered)` power into make electricity.
+The `G.Trash` data has `r nrow(G.Trash_df)` observations and `r ncol(G.Trash_df)` variables and tells us about the  information on the dumpter number, date of collection, amount of total litter and litter type. On `r G.Trash_df$date[1]`, dumpster `r G.Trash_df$dumpster[1]` has `r G.Trash_df$weight_tons[1]` tons of trash, which could power average `r G.Trash_df$homes_powered[1]` homes powered.
 
 For available data, what was the total weight of trash collected by Professor Trash Wheel? 
 
@@ -161,7 +161,7 @@ The total weight of trash collected by Professor Trash Wheel is `r sum(Prof.Tras
 
 What was the total number of cigarette butts collected by Gwynnda in July of 2021?
 
-The total number of cigarette butts collected by Gwynnda in July of 2021 is `r sum(G.Trash_df$cigarette_butts)`.
+The total number of cigarette butts collected by Gwynnda in July of 2021 is `r sum(filter(G.Trash_df, month == "July" & year == 2021)$cigarette_butts)`.
 
 ## Problem 3
 
@@ -179,20 +179,28 @@ base_df =
     sex = recode(sex, "0" = "female", "1" = "male"),
     apoe4 = recode(apoe4, "0" = "non-apoe4 carrier", "1" = "apoe4 carrier"),
     age_at_onset = ifelse(age_at_onset == '.', NA, age_at_onset)
-  ) |>
+  ) 
+
+base_mci_df =
+  base_df |>
   filter(current_age < age_at_onset | is.na(age_at_onset)) 
 ```
 
 Discuss important steps in the import process and relevant features of the dataset.
 
-Because the first line is the description about each column variables, we should skip 
-the first line when importing csv dataset. In addition, sex and apoe4
+Because the first line is the description about each column variables, skipped 
+the first line when importing csv dataset. In addition, changed sex and apoe4 from
+numeric into charater type. The most important step to filter any participants who do not meet the stated inclusion criteria.
 
-There are  `r nrow(base_df)` were recruited, and of __ these develop MCI.
+The `base_df` data is the total recruited dataset, having `r nrow(base_df)` observations and `r ncol(base_df)` variables and tells us about `r colnames(base_df)`.
+
+The `base_mci_df` data has `r nrow(base_mci_df)` observations and `r ncol(base_mci_df)` variables and tells us about similar information with `base_df` but about people who has no MCI at baseline.
+
+There are `r nrow(base_df)` were recruited, and of `r nrow(base_mci_df)` these develop MCI.
 
 The average baseline age is `r mean(base_df$current_age)`.
 
-What proportion of women in the study are APOE4 carriers?
+`r as.integer(count(filter(base_mci_df, sex == "female" & apoe4 == "apoe4 carrier")))/as.integer(count(filter(base_mci_df, sex == "female")))*100`% proportion of women in the study are APOE4 carriers.
 
 ### Step 2. 
 
@@ -208,11 +216,13 @@ amyloid = read_csv("data_mci/mci_amyloid.csv", skip = 1) |>
   pivot_longer(
     time_0:time_8, 
     names_to = "timeperiod",
-    values_to = "years"
+    values_to = "time in years elapsed"
   ) 
 ```
 
 Comment on the steps on the import process and the features of the dataset.
+
+Similarly, skipped the first line description to import csv data. Furthermore, switching from “wide” to “long” format for 5 types of time period and time (in years) elapsed since the study baseline to the visit where biomarker Amyloid _ 42/40 ratio was measured.
 
 ```{r}
 diffdata1 =
@@ -225,3 +235,8 @@ cdata_p3 =
   inner_join(base_df, amyloid)
 ```
 
+Matching `baseline` data with `amyloid` data, there are `r nrow(diffdata1)` data appear in only the baseline.
+
+Matching `amyloid` data with `baseline` data, there are `r nrow(diffdata2)` data appear in only the amyloid.
+
+The combined dataset has `r nrow(cdata_p3)` observations and `r ncol(cdata_p3)` variables and tells us about information about `r colnames(cdata_p3)`. 
