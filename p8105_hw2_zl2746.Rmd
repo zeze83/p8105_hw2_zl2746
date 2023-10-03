@@ -114,7 +114,7 @@ The average unemployment rate over the same time period in which a republican wa
 
 ```{r problem2}
 Mr.Trash_df = 
-  read_excel("202309 Trash Wheel Collection Data.xlsx",sheet = 1, range = "A2:N549") |>
+  read_excel("202309 Trash Wheel Collection Data.xlsx",sheet = 1, range = "A2:N586") |>
   janitor::clean_names() |>
   mutate(
     homes_powered = (weight_tons*500)/30
@@ -182,7 +182,10 @@ base_df =
   filter(current_age < age_at_onset | is.na(age_at_onset)) 
 ```
 
-Discuss important steps in the import process and relevant features of the dataset. 
+Discuss important steps in the import process and relevant features of the dataset.
+
+Because the first line is the description about each column variables, we should skip 
+the first line when importing csv dataset. In addition, sex and apoe4
 
 There are  `r nrow(base_df)` were recruited, and of __ these develop MCI.
 
