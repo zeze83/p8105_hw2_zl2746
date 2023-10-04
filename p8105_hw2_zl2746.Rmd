@@ -155,6 +155,8 @@ The `Prof.Trash` data has `r nrow(Prof.Trash_df)` observations and `r ncol(Prof.
 
 The `G.Trash` data has `r nrow(G.Trash_df)` observations and `r ncol(G.Trash_df)` variables and tells us about the  information on the dumpter number, date of collection, amount of total litter and litter type. On `r G.Trash_df$date[1]`, dumpster `r G.Trash_df$dumpster[1]` has `r G.Trash_df$weight_tons[1]` tons of trash, which could power average `r G.Trash_df$homes_powered[1]` homes powered.
 
+The combined data `cdata_p2` has `r nrow(cdata_p2)` observations and `r ncol(cdata_p2)` variables.
+
 For available data, what was the total weight of trash collected by Professor Trash Wheel? 
 
 The total weight of trash collected by Professor Trash Wheel is `r sum(Prof.Trash_df$weight_tons)` tons.
