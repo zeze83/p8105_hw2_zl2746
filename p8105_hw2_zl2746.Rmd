@@ -200,7 +200,7 @@ The `base_mci_df` data has `r nrow(base_mci_df)` observations and `r ncol(base_m
 
 There are `r nrow(base_df)` were recruited, and of `r nrow(base_mci_df)` these develop MCI.
 
-The average baseline age is `r mean(base_df$current_age)`.
+The average baseline age is `r mean(base_mci_df$current_age)`.
 
 `r as.integer(count(filter(base_mci_df, sex == "female" & apoe4 == "apoe4 carrier")))/as.integer(count(filter(base_mci_df, sex == "female")))*100`% proportion of women in the study are APOE4 carriers.
 
