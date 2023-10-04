@@ -228,13 +228,13 @@ Similarly, skipped the first line description to import csv data. Furthermore, s
 
 ```{r}
 diffdata1 =
-  anti_join(base_df, amyloid)
+  anti_join(base_mci_df, amyloid)
 
 diffdata2 =
-  anti_join(amyloid, base_df)
+  anti_join(amyloid, base_mci_df)
 
 cdata_p3 = 
-  inner_join(base_df, amyloid)
+  inner_join(base_mci_df, amyloid)
 ```
 
 Matching `baseline` data with `amyloid` data, there are `r nrow(diffdata1)` data appear in only the baseline.
